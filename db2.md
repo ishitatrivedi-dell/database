@@ -179,5 +179,32 @@ here we cannot write upadtemany and give all the upadtes in ine go
 
  15) Count the number of subjects in which a student is enrolled
 
- * 
+ * db.students.subjectEnrolled().count();
+ * this cannot be used 
+ subjectEnrolled is not a method: MongoDB does not have a method like subjectEnrolled().
+
+You need to access the array field (subjectsEnrolled) and calculate the size of that array for each student.
+
+**correct answer is** 
+
+db.students.aggregate(
+  
+  [
+  
+  {
+    
+    $project: {
+      name: 1,                          // Include the student's name
+      subjectsCount: {                  // Calculate the size of subjectsEnrolled
+        $cond: {
+          if: { $isArray: "$subjectsEnrolled" }, 
+          then: { $size: "$subjectsEnrolled" },
+          else: { $size: "$coursesEnrolled" } // For students with "coursesEnrolled"
+        }
+      }
+    }
+  }
+]
+
+);
 
